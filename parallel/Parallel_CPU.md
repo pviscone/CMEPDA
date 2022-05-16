@@ -169,7 +169,7 @@ Un sistema si dice conorrente se può avere più azioni **in progresso** di esec
   - *Processi diversi usano diverse aree di memoria*
   - *La creazione di un nuovo processo è onerosa per il sistema in quanto deve allocare le risorse necessarie alla sua esecuzione*
 
-- **Thread**: Sottoprocesso a cui è assegnata la CPU per l'esecuzione. I thread possono essere eseguiti in maniera concorrente indipentdentemente dallo stato del processo.
+- **Thread**: Sottoprocesso (in realtà è un percorso di esecuzione di un processo ovvero una procedura interna istanziata dal sistema operativo) a cui è assegnata la CPU per l'esecuzione. I thread possono essere eseguiti in maniera concorrente indipentdentemente dallo stato del processo. La sua creazione ha un overhead minore di quella di un processo in quanto non sono necessarie tutte le allocazioni che necessitano i processi (Il thread ha uno stack tutto suo ma l'area dati globale è condivisa con gli altri thread)
 
   - *I Thread condividono le stesse informazioni di stato, la stessa memoria e le stesse risorse di sistema*
 
