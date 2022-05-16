@@ -30,3 +30,6 @@ Notes form CMEPDA course (L. Baldini Unipi)
 
 - Capisci come workflow c++ (Doxygen, testing, wrap con boost, eigen, cmake, continuos integration)
 
+## Extra
+
+- Regex
