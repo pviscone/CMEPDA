@@ -1,0 +1,3 @@
+[submodule "cpp_training"]
+	path = cpp_training
+	url = git@github.com:pviscone/cpp_training.git
