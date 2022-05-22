@@ -1,7 +1,0 @@
-cosa è from future import??
-
-come funzionano le basi di python (es. garbage collector)
-
-differenze tra for loop e list comprehension
-
-Cosa sono robe tipo numba?

@@ -1,3 +1,0 @@
-espressioni regolari
-
-esplorare libreria standard
