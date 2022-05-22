@@ -79,11 +79,11 @@ https://nigno17.github.io/assets/pdf/Pipelining.pdf
 
 Il pipelining è una tecnica per migliorare le prestazioni del processore basata sulla **sovrapposizione dell'esecuzione di più istruzioni appartenti a un flusso sequenziale**. Questa tecnica è implementata in tutti i processori moderni
 
-![Sequential-Execution-of-Instructions](.\img\Sequential-Execution-of-Instructions.jpg)
+![Sequential-Execution-of-Instructions](./img/Sequential-Execution-of-Instructions.jpg)
 
 
 
-![Instruction-Pipelining](.\img\Instruction-Pipelining.jpg)
+![Instruction-Pipelining](./img/Instruction-Pipelining.jpg)
 
 La presenza di pipeline aumenta il numero di istruzioni eseguite per unità di tempo MA non riduce la il tempo di esecuzione della singola istruzione. 
 
@@ -97,17 +97,17 @@ L'esecuzione di un'istruzione richiede 5 cicli di clock e (nel caso di cache hit
 
 Nel caso migliore (senza cache miss) si hanno 5 istruzioni che runnano in parallelo. Per gestire l'esecuzione in pipeline di più istruzioni è necessario mantenere delle informazioni tra i vari stadi nei **buffer interstadi** che contengono vari registri per la gestione della pipeline
 
-![pipeline_buffer](.\img\pipeline_buffer.PNG)
+![pipeline_buffer](./img/pipeline_buffer.PNG)
 
 Il pipeline però ha dei **problemi**:
 
-- **Dipendenze di dato** : avviene quando una istruzione ha bisogno di leggere dai registri l'output dell'istruzione precedente![data_dependency](.\img\data_dependency.PNG)
+- **Dipendenze di dato** : avviene quando una istruzione ha bisogno di leggere dai registri l'output dell'istruzione precedente![data_dependency](./img/data_dependency.PNG)
 
   Per porre in stallo un'istruzione vengono inserite tra le istruzioni in conflitto delle istruzioni nulle che causano un ciclo di inattività. Per far si che questo accada il meno possibile i compilatori ottimizzani riordinano il codice in modo tale da spostare istruzioni utili là dove andrebbero delle istruzioni nulle.
 
   Per risolvere il problema è possibile fare **operand forwarding** ovvero creare un'architettura in cui i registri intersadio  vengono inoltrati agli stadi precedenti
 
-  ![operand_forwarding](.\img\operand_forwarding.PNG)
+  ![operand_forwarding](./img/operand_forwarding.PNG)
 
   
 
@@ -115,7 +115,7 @@ Il pipeline però ha dei **problemi**:
 
 - **Ritardi nei salti**: nel caso di un'istruzione di salto (vai a un'altra istruzione), l'indirizzo di destinazione viene caricato durante il terzo ciclo di clock. Questo significa che due cicli di clock vengono persi (**penalità di salto**)
 
-  ![salto](.\img\salto.PNG)
+  ![salto](./img/salto.PNG)
 
   Per evitare che questo accada si può aggiungere un buffer di destinazione di salto che contiene una tabella di tutte le istruzioni di salto del programa con annessi indirizzi di destinazione. In questo modo la predizione della destinazione di salto avviene nel primo stadio ovvero durante la lettura della memoria
 
@@ -134,7 +134,7 @@ Sono processori con più unità di esecuzione che eseguono in parallelo più ist
 
 In questo modo è possibile eseguire più istruzioni (quante sono le unità di esecuzione) contemporaneamente oltre a usare il pipelining
 
-![superscalar](.\img\superscalar.PNG)*Caso in cui si hanno 2 unità di esecuzione*
+![superscalar](./img/superscalar.PNG)*Caso in cui si hanno 2 unità di esecuzione*
 
 Durante lo smistamento il processore deve assicurarsi che tutte le risorse necessarie siano disponibili e deve prevenire i deadlock (casi di stallo a causa di dipendeze reciproche di due istruzioni)
 
@@ -286,9 +286,9 @@ http://tesi.cab.unipd.it/26364/1/Tesi_Lorenzo_Baesso_578440.pdf
 
 ## Legge di Amdahl
 
-Definito lo speed up come il rapporto di tempo di esecuzione tra la versione parallela e sequenziale di un algoritmo, la legge di amdahl afferma che lo speed up ottenibile è $$S=\frac{1}{1-P+P/N}$$ dove P è la frazione di codice parallelizabile e N il numero di processori
+Definito lo speed up come il rapporto di tempo di esecuzione tra la versione parallela e sequenziale di un algoritmo, la legge di amdahl afferma che lo speed up ottenibile è $$S=/frac{1}{1-P+P/N}$$ dove P è la frazione di codice parallelizabile e N il numero di processori
 
-![amdahl](.\img\amdahl.PNG)
+![amdahl](./img/amdahl.PNG)
 
 Purtroppo ci saranno sempre delle parti di codici da eseguire necessariamente in maniera sequenziale.
 
@@ -308,7 +308,7 @@ Afferma che $S=N-(1-P)(N-1$)
 
 Questa legge affronta i deficit della legge di amdahl che non considera che all'aumentare del numero di macchine aumenta anche  la potenza di calcolo disponibili  
 
-![gustafson](.\img\gustafson.PNG)
+![gustafson](./img/gustafson.PNG)
 
-![gustafsonvsamdahl](.\img\gustafsonvsamdahl.PNG)
+![gustafsonvsamdahl](./img/gustafsonvsamdahl.PNG)
 
