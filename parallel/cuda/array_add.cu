@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <vector>
 #include <iostream>
+#include <numeric>
 
 using namespace std;
 
@@ -24,12 +25,14 @@ __global__ void ker (float * a, float *b, float *c, size_t n)
     }
 }
 
-
 int main(){
     //In questo caso converrebbe istanziare i device_vector direttamente sulla GPU senza fare la copia dall'host ma
     // è giusto per fare un esempio
-    vector <float> h_a{1,2,3,4,5,6,7,8,9,10};
-    vector <float> h_b{2,3,4,5,6,7,8,9,10,11};
+    vector <float> h_a(1e4);
+    vector <float> h_b(1e4);
+    //creo vettori da 0 a 1e4-1 e da 2 a 1e4+1
+    iota(h_a.begin(), h_a.end(), 0);
+    iota(h_b.begin(), h_b.end(), 2);
     size_t n = h_a.size();
     thrust::device_vector<float> a(n), b(n),c(n);
     thrust::host_vector<float> host_res(n) ;
@@ -39,11 +42,11 @@ int main(){
     b=h_b;
 
     //Alloca il numero minimo di threads necessari per soddisfare il task
-    int num_blocks = 1+n/1024;
-    int num_threads = (n/num_blocks)+1;
+    const int thread_per_block=1024;
+    const int num_blocks = n/thread_per_block+1;
 
 
-    ker<<<num_blocks,num_threads>>>(a.data().get(),b.data().get(),c.data().get(),n);
+    ker<<<num_blocks,thread_per_block>>>(a.data().get(),b.data().get(),c.data().get(),n);
     cudaDeviceSynchronize();
 
     //copia il risultato che è nella GPU nell'host

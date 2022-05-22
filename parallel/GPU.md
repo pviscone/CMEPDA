@@ -54,6 +54,12 @@ I cores sono organizzati in sottostrutture: principalmente in thread, blocchi e 
 
 Conviene usare le GPU solo quando l'overhead della copia in memoria è irrilevante rispetto ai tempi di calcolo. Inoltre conviene usare le GPU solo su alcune istruzioni e tenere il resto su CPU
 
+### Coalescenza della memoria
+
+La lettura della memoria nelle GPU è coalescente ovvero la memoria viene letta in burst (ovvero in pacchetti).
+
+Se si riesce a tenere adiacenti i dati usati da thread adiacenti si può leggere di colpo e passare ai thread un intero burst di dati
+
 ### Direttive e librerie
 
 Invece che programmare tutto in CUDA potrebbe essere più semplice usare librerie come OpenMP(preferibile per parallelismo su CPU o calcolo distribuito) o OpenACC(preferibile per GPU) dove basta usare delle direttive al preprocessore per mandare istruzioni e dati alla GPU (usato soprattuto su loopcon molte iterazioni e non troppi if). 
@@ -167,6 +173,33 @@ Questa tecnica è chiamata thread linear addressing stride ed è molto utile in 
 > In questo modo stiamo dicendo al compilatore che il puntatore non è soggetto ad aliasing e può evitare tutta una serie di check e fare ottimizzazioni più aggressive.
 >
 > Allo stesso modo quando possibile conviene usare le const variables per permettere ottimizzazioni maggiori del compilatore
+
+### C-like memory allocation
+
+Solitamente conviene usare i vector di thrust ma si può fare tutto alla maniera del C ovvero allocare con cudaMalloc, copiare con cudaMemcpy e liberare con cudafree
+
+```cpp
+int main(){
+    int host_arr [10] {1,2,3,4,5,6,7,8,9,10};
+    size_t size=N*sizeof(int);
+    
+    //Alloco puntatore nella gpu di int lungo 10;
+    cudaMalloc((void **)&device_arr, size);
+    //Copio l'array dall'host alla GPU
+    cudaMemcpy(device_arr,host_arr,size,cudaMemcpyToDevice);
+    //####Do things
+    //Copio risultato dalla GPU all'host
+    cudaMemcpy(host_res,device_res,size,cudaMemcpyDeviceToHost);
+    //Dealloco la GPU
+    cudaFree(device_arr);
+}
+```
+
+
+
+### Atomic operations
+
+Ci sono alcune operazioni built-in chiamate atomiche che sono operazioni direttamente implementate nell'hardware
 
 ### Shared memory
 
