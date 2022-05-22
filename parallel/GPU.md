@@ -75,7 +75,11 @@ Se si vuole passare una classe C++ al kernel tutti i metodi della funzione devon
 In CUDA ci sono alcune keyword da usare come prefissi alle funzioni che servono a dare istruzioni precise:
 
 - \_\_host\_\_ :il compilatore compila una versione della funzione che funzioni anche su CPU  (necessaria solo se si vuole sia CPu che GPU)
+
 - \_\_device\_\_: la funzione viene compilata per funzionare su GPU (si possono creare anche 2 versioni basta usare \_\_host\_\_  \_\_device\_\_ inline)
+
+  (Si possono creare anche variabili o array C style che verranno allocati direttamente sulla GPU (es. \_\_device\_\_ int arr\[2\]\[2\]))
+
 - inline: per le funzioni device la compilazione inline è di defult, nel caso volessimo anche la versione host dobbiamo manualmente generarla inline
 
 E' possibile avere anche 2 funzioni totalmente diverse ma con lo stesso nome
@@ -83,4 +87,115 @@ E' possibile avere anche 2 funzioni totalmente diverse ma con lo stesso nome
 - \_\_global\_\_ : questa keyword specifica che la funzione è un kernel da lanciare su gpu. La differenza con la keyword device è che un kernel global è chiamato da CPU e runna su GPU mentre una funzione device è chiamabile solo dalla GPU.
   **I kernel devono essere di tipo void e i suoi argomenti possono essere solo valori scalari o puntatori. Inoltre bisogna passare i dati a valori, non si possono usare le references (è anche logico visto che tutto va copiato sulla global memory della GPU)** (come ho già detto, con i kernel devi ragionare come in C)
 
-Il modo in cui parallelizzare i loop
+ Per runnare un kernel basta chiamare il kernel nel seguente modo
+
+```cpp
+__global__ void kernel_name (){}
+
+int main(){
+    kernel_name<<<n,m>>>();
+    cudaDeviceSynchronize();
+    return 0;
+}
+```
+
+In questo modo il kernel verrà runnato su m thread di n blocchi (quindi n x m volte in parallelo).
+**Il kernel viene runnato in maniera asincrona rispetto alla GPU. Il comando cudaDeviceSynchronize() serve ad attendere il risultato dalla GPU**
+
+**Questi valori (n e m) possono essere definiti a runtime**
+
+> Per parallelizzare un loop tipicamente quello che si fa è eseguire le operazioni in parallelo e usare un if di controllo
+> ```cpp
+> //La variabile step assegna a ogni thread un id unidimensionale
+> int step=blockIdx.x*blockDim.x+threadIdx.x;
+> if (step<N){
+>     //array[step]=do things
+> }
+> //senza l'if è come parallelizzare un loop da 0 a threads*blocks-1
+> ```
+>
+> 
+
+Se l'array è più grande del numero di thread istanziati si può usare un while al posto dell if
+```cpp
+while(step<N){
+    //array[step]=do things
+    step+=gridDim.x*blockDim.x //gridsize stride
+}
+```
+
+Questa tecnica è chiamata thread linear addressing stride ed è molto utile in quanto mantiene l'esecuzione dei thread adiacenti e consente di ottimizzare la gestione della memoria
+
+> Abbiamo visto il caso unidimensionale, nel **caso 3D** la formula per rankare i thread nei blocchi (la variabile step) è
+>
+> rank= (z\*dim_y+y)\*dim_x+x
+>
+> (potrebbe essere anche utile rankare i blocchi nella griglia e i thread nella griglia.
+> Se per esempio vogliamo associare a ogni elemento di un tensore 3D il suo indice dobbiamo porlo uguale alla thread_rank_in_grid)
+>
+> ```cpp
+> int block_size = blockDim.x*blockDim.y*blockDim.z;
+> int grid_size = gridDim.x*gridDim.y*gridDim.z;
+> int total_threads = block_size*grid_size;
+> int thread_rank_in_block = (threadIdx.z*blockDim.y+
+> threadIdx.y)*blockDim.x+threadIdx.x;
+> int block_rank_in_grid = (blockIdx.z*gridDim.y+
+> blockIdx.y)*gridDim.x+blockIdx.x;
+> int thread_rank_in_grid = block_rank_in_grid*block_size+
+> thread_rank_in_block;
+> ```
+>
+> per runnare il kernel su blocchi 3d o 2d dobbiamo definire delle variabili dim2 o dim3
+> ```cpp
+> dim3 block3d(5,5,2);
+> dim3 thread3d(2,2,1);
+> kernel_name<<<block3d,thread3d>>>();
+> ```
+>
+> Un alternativa all'uso di blocchi e thread multidimensionali è usare come visto prima il grid stride in un ciclo while
+
+> **TIPS: evita di usare if else divergenti nel kernel**
+>
+> Se all'interno del kernel c'è un if else quello che succede è che runneranno prima tutti i thread che soddisfano la condizione e solo dopo quelli che non la soddisfano. Questo succede perchè l'architettura di un singolo blocco è SIMD quindi non è possibile runnare comandi diversi simultaneamente
+
+> **TIPS: Ottimizzazione dei puntatori** Quando si lavora con un puntatore nella definizione conviene semptre usare la keyword **restrict**
+>
+> ```cpp
+> int func(float * __restrict ptr){}
+> ```
+>
+> In questo modo stiamo dicendo al compilatore che il puntatore non è soggetto ad aliasing e può evitare tutta una serie di check e fare ottimizzazioni più aggressive.
+>
+> Allo stesso modo quando possibile conviene usare le const variables per permettere ottimizzazioni maggiori del compilatore
+
+### Shared memory
+
+Per dichiarare un array nella shared memory di un blocco si usa il prefisso **\_\_shared\_\_**
+```cpp
+__global__ void ker(){
+    __shared__ float arr[];
+}
+```
+
+La shared memory può essere allocata sia staticamente che dinamicamente. Se si vuole allocare la memoria in modo dinamico allora va usato anche il prefisso **extern**
+
+Quando diversi thread usano la stessa shared memory si possono verificare delle race condition quindi i thread vanno sincronizzati.
+
+Il comando **\_\_syncthreads()** mette in standby l'esecuzione del kernel in attesa che tutti i thread di un blocco hanno completato le operazioni impartite
+
+## Thrust
+
+Possiamo usare thrust per creare dei container e passarli alla GPU
+
+```cpp
+#include "thrust/device_vector.h"
+size_t size=10;
+thrust::device_vector<float>vec(size);
+float* ptr =thrust::raw_pointer_cast(&ptr[0])
+```
+
+A un kernel non possiamo passare il container ma solo il puntatore.
+
+Questi container, come quelli della std, sono dotati di numerosi metodi che è inutile scrivere qui, si veda la documentazione, la sintassi è molto simile a quella dei container della std
+
+(E' possibile creare vettori anche sull'host con host_vector)
