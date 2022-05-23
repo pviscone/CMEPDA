@@ -14,10 +14,6 @@ Notes form CMEPDA course (L. Baldini Unipi)
 
 ## Programmazione parallela
 
-- Esempi multiprocessing e multithreading python
-- GPU teoria
-- Esempi CUDA e pycuda
-
 ## C++
 
 - Rivedi velocemente slides c++ e integra roba presa dal corso udemy
@@ -25,6 +21,7 @@ Notes form CMEPDA course (L. Baldini Unipi)
 - Vedi come funziona CMAKE
 - comandi per prog parallela in c++
 - Vedi slide root e scrivi un notebook
+- Vedi link sulla wiki lhcb relativa alla scrittura di codice c++ performante
 
 ## Progetto
 
