@@ -16,17 +16,12 @@ Notes form CMEPDA course (L. Baldini Unipi)
 
 ## C++
 
-- Rivedi velocemente slides c++ e integra roba presa dal corso udemy
-- Finisci ultimissima parte del corso udemy
 - Vedi come funziona CMAKE
-- comandi per prog parallela in c++
-- Vedi slide root e scrivi un notebook
+- Multiprocessing in C++
 - Vedi link sulla wiki lhcb relativa alla scrittura di codice c++ performante
+- Vedi lezione sui big data e quella dell'anno prima sull'ottimizzazione
 
 ## Progetto
 
 - Capisci come workflow c++ (Doxygen, testing, wrap con boost, eigen, cmake, continuos integration)
 
-## Extra
-
-- Regex
