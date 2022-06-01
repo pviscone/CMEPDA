@@ -1,6 +1,0 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/pviscone/Desktop/CMEPDA'
-make: Leaving directory '/home/pviscone/Desktop/CMEPDA'
- 
-make: *** No targets specified and no makefile found.  Stop.
-
