@@ -137,7 +137,34 @@ G4VPhysicalVolume* trackerPhys=new G4PVPlacement(
 
 ## Definire materiale
 
-Si possono definire nuovi materiali o misture. Il database di Geant è abbastanza ampio, vedi il manuale se serve, per ora skippo l'argomento
+Si possono definire nuovi materiali o misture usando G4Element per poi poter costruire un G4Material. 
+
+```cpp
+//definizione acqua
+G4double z, a, density;
+G4String name, symbol;
+G4int ncomponents, natoms;
+a = 1.01*g/mole;
+G4Element* elH = new G4Element(name="Hydrogen",symbol="H" , z= 1., a);
+a = 16.00*g/mole;
+G4Element* elO = new G4Element(name="Oxygen"
+ ,symbol="O" , z= 8., a);
+density = 1.000*g/cm3;
+G4Material* H2O = new G4Material(name="Water",density,ncomponents=2);
+H2O->AddElement(elH, natoms=2);
+H2O->AddElement(elO, natoms=1);
+```
+
+
+
+Per definire un materiale va istanziato un oggetto (puntatore) G4Material. Si possono usare i dati del database del NIST. Per farlo possiamo usare il G4NistManager
+
+```cpp
+G4NistManager* man=G4NistManager::Istance();
+G4Material* Air = man->FindOrBuildMaterial("G4_AIR");
+```
+
+
 
 ## Definizione delle particelle
 
