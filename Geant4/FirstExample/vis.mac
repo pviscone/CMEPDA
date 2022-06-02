@@ -7,3 +7,6 @@
 #Disegna le tracce delle particelle
 /vis/viewer/set/autoRefresh true
 /vis/scene/add/trajectories smooth
+
+#Accumula tutti gli eventi in una run
+/vis/scene/endOfEventAction accumulate

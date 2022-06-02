@@ -8,8 +8,8 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     G4ParticleDefinition* particle = particleTable->FindParticle("proton");
 
     fParticleGun->SetParticleDefinition(particle);
-    fParticleGun->SetParticleEnergy(100*TeV);
-    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,-0.5*m));
+    fParticleGun->SetParticleEnergy(4*GeV);
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,-0.3*m));
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
 }
 
