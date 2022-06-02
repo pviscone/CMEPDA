@@ -166,6 +166,30 @@ sim.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/sim.cc.s
 .PHONY : sim.cc.s
 
+src/action.o: src/action.cc.o
+.PHONY : src/action.o
+
+# target to build an object file
+src/action.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/action.cc.o
+.PHONY : src/action.cc.o
+
+src/action.i: src/action.cc.i
+.PHONY : src/action.i
+
+# target to preprocess a source file
+src/action.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/action.cc.i
+.PHONY : src/action.cc.i
+
+src/action.s: src/action.cc.s
+.PHONY : src/action.s
+
+# target to generate assembly for a file
+src/action.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/action.cc.s
+.PHONY : src/action.cc.s
+
 src/construction.o: src/construction.cc.o
 .PHONY : src/construction.o
 
@@ -189,6 +213,30 @@ src/construction.s: src/construction.cc.s
 src/construction.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/construction.cc.s
 .PHONY : src/construction.cc.s
+
+src/generator.o: src/generator.cc.o
+.PHONY : src/generator.o
+
+# target to build an object file
+src/generator.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/generator.cc.o
+.PHONY : src/generator.cc.o
+
+src/generator.i: src/generator.cc.i
+.PHONY : src/generator.i
+
+# target to preprocess a source file
+src/generator.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/generator.cc.i
+.PHONY : src/generator.cc.i
+
+src/generator.s: src/generator.cc.s
+.PHONY : src/generator.s
+
+# target to generate assembly for a file
+src/generator.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/generator.cc.s
+.PHONY : src/generator.cc.s
 
 src/physics.o: src/physics.cc.o
 .PHONY : src/physics.o
@@ -227,9 +275,15 @@ help:
 	@echo "... sim.o"
 	@echo "... sim.i"
 	@echo "... sim.s"
+	@echo "... src/action.o"
+	@echo "... src/action.i"
+	@echo "... src/action.s"
 	@echo "... src/construction.o"
 	@echo "... src/construction.i"
 	@echo "... src/construction.s"
+	@echo "... src/generator.o"
+	@echo "... src/generator.i"
+	@echo "... src/generator.s"
 	@echo "... src/physics.o"
 	@echo "... src/physics.i"
 	@echo "... src/physics.s"

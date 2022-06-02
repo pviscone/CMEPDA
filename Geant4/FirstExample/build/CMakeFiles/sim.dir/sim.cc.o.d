@@ -454,14 +454,21 @@ CMakeFiles/sim.dir/sim.cc.o: \
  /usr/include/Geant4/G4ProcessType.hh \
  /usr/include/Geant4/G4ParticleChangeForDecay.hh \
  /usr/include/Geant4/G4DecayProcessType.hh \
+ /home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/include/action.hh \
+ /usr/include/Geant4/G4VUserActionInitialization.hh \
+ /home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/include/generator.hh \
+ /usr/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
+ /usr/include/Geant4/G4ParticleGun.hh \
+ /usr/include/Geant4/G4VPrimaryGenerator.hh \
+ /usr/include/Geant4/G4PrimaryVertex.hh \
+ /usr/include/Geant4/G4PrimaryParticle.hh \
+ /usr/include/Geant4/G4ParticleTable.hh \
  /usr/include/Geant4/G4UImanager.hh /usr/include/Geant4/icomsdefs.hh \
  /usr/include/Geant4/G4VStateDependent.hh \
  /usr/include/Geant4/G4ApplicationState.hh \
  /usr/include/Geant4/G4UIcommandStatus.hh \
  /usr/include/Geant4/G4RunManager.hh /usr/include/Geant4/G4Event.hh \
- /usr/include/Geant4/evtdefs.hh /usr/include/Geant4/G4PrimaryVertex.hh \
- /usr/include/Geant4/G4PrimaryParticle.hh \
- /usr/include/Geant4/G4HCofThisEvent.hh \
+ /usr/include/Geant4/evtdefs.hh /usr/include/Geant4/G4HCofThisEvent.hh \
  /usr/include/Geant4/G4VHitsCollection.hh \
  /usr/include/Geant4/G4DCofThisEvent.hh \
  /usr/include/Geant4/G4VDigiCollection.hh \

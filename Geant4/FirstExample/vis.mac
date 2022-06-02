@@ -1,2 +1,9 @@
+#Avvia visualizzazione con OpenGL
 /vis/open OGL
+
+#Disegna il volume
 /vis/drawVolume
+
+#Disegna le tracce delle particelle
+/vis/viewer/set/autoRefresh true
+/vis/scene/add/trajectories smooth

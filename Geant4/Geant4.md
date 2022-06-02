@@ -309,6 +309,7 @@ class ExG4PrimaryGeneratorAction01 : public G4VUserPrimaryGeneratorAction
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//costruttore del generatore. DEfinizione e settaggi della particle gun
 ExG4PrimaryGeneratorAction01::ExG4PrimaryGeneratorAction01(
     const G4String& particleName,
     G4double energy,
@@ -327,10 +328,13 @@ ExG4PrimaryGeneratorAction01::ExG4PrimaryGeneratorAction01(
 	}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//Distruttore deve deallocare la particle gun
 ExG4PrimaryGeneratorAction01::~ExG4PrimaryGeneratorAction01(){
 	delete fParticleGun;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+//Generate primaries deve usare la article gun per generare la partice
 void ExG4PrimaryGeneratorAction01::GeneratePrimaries(G4Event* anEvent){
     // this function is called at the beginning of event
     fParticleGun->GeneratePrimaryVertex(anEvent);
