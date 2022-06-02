@@ -1,5 +1,5 @@
 # CMEPDA
-Notes form CMEPDA course (L. Baldini Unipi)
+Notes form CMEPDA course (Unipi) and more
 
 # TODO
 
