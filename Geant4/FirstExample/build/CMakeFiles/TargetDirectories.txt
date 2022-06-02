@@ -1,4 +1,0 @@
-/home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/build/CMakeFiles/sim.dir
-/home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/build/CMakeFiles/Simulation.dir
-/home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/build/CMakeFiles/edit_cache.dir
-/home/pviscone/Desktop/CMEPDA/Geant4/FirstExample/build/CMakeFiles/rebuild_cache.dir
