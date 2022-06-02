@@ -2,3 +2,4 @@ videos
 parallel/pdf
 slides
 .vscode
+Geant4/*/build
