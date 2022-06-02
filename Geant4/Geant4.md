@@ -131,8 +131,8 @@ G4VPhysicalVolume* trackerPhys=new G4PVPlacement(
     "Tracker", // its name
     worldLog, // its mother (logical) volume
     false, // no boolean operations
-    0); // its copy number
-
+    0, // its copy number
+	true); //OPTIONAL: Check for overlapping (default false). Conviene metterlo
 ```
 
 ## Definire materiale
@@ -252,11 +252,15 @@ Una cosa più semplice da fare è usare la classe G4VModularPhysicsList
 
 ```cpp
 //MyPhysicsList è una classe che deriva da G4VPhysicsConstructor
-MyPhysicsList::MyPhysicsList():G4VModularPhysicsList()
+class MyPhysicsList : public G4VModularPhysicsList
 {// EM Physics
-RegisterPhysics( new G4EmStandardPhysics(ver) );
-// Decays
-RegisterPhysics( new G4DecayPhysics(ver) );}
+    public:
+    MyPhysicsLis(){
+        RegisterPhysics( new G4EmStandardPhysics(ver) );
+		// Decays
+		RegisterPhysics( new G4DecayPhysics(ver) );
+    }
+}
 ```
 
 ## Generare evento primario
@@ -442,3 +446,20 @@ delete visManager;
 ```
 
 Tipicamente per gestire le opzioni di visualizzazione si usa una macro (negli esempi chiamata vis.mac). Guarda gli esempi per capire come funziona
+
+Per avviare la visualizzazione con openGL usare il comando /vis/open OGL
+
+```cpp
+UImanager->ApplyCommand("/vis/open OGL");
+```
+
+> Può essere utile usare if(argc==1) 
+>
+> - argc è il numero di argomenti passati all'eseguibile +1
+> - argv è un array contenente i parametri passati all'eseguibile (in argv[0] c'è l'eseguibile stesso)
+>
+> In questo modo è possibile avere un comportamento predefinito a meno che non si decida di passare manualmente un'altra macro
+
+Altre comandi utili sono:
+
+- /vis/drawVolume : Disegna i volumi definiti
