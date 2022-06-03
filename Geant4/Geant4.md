@@ -467,3 +467,139 @@ UImanager->ApplyCommand("/vis/open OGL");
 Altre comandi utili sono:
 
 - /vis/drawVolume : Disegna i volumi definiti
+
+------
+
+------
+
+# Toolkit fundamentals
+
+Brevemente il ruolo di ogni categoria di classi è:
+
+- **Run and Event**: classi relative alla generazioni di eventi e particelle secondarie
+- **Tracking and track**: classi relative alla propagazione delle particelle.Un processo fisico può eseguire delle azioni lungo la traccia (possono essere distribuite sia nello spazione che nel tempo)
+- **Geometry and magnetic field**: definiscono la geometria dell'apparato e dei campi magnetici
+- **Particle and material**: definiscono le particelle e i materiali in gioco
+- **Physics** Definiscono tutti i processi fisici che verranno simulati. E' possibile selezionare modelli diversi per diversi energy range o materiali. Tramite data encapsulation e polimorfismo è possibile avere facilmente accesso alle cross sectio
+- **Hits and digitization:** I volumi raggruppati sotto la categoria sensitive detector possono fornire il readout di un detector tramite le hit collection
+- **Visualization**: si occupa delle visualizzazione di solidi, tracce e hit
+- **Interfaces**: gestione della GUI
+
+Geant integra dei tipi (es. G4int) che altro non sono che dei typedef ai tipi definiti nella STL o in CLHEP e sono definiti nell'header globals.hh
+
+> **Unità**
+>
+> In SystemOfUnits.hh sono definite tutte le unità più utilizzate ma è possibile:
+>
+> - Definirne di nuove:
+>   ```cpp
+>   static const G4double inch = 2.54*cm
+>   ```
+>
+> - Fare il cambio di unità in place
+>   ```cpp
+>   G4cout  << energy_in_mev/keV << G4endl;
+>   ```
+
+## Run
+
+Una run consiste in una sequeza di eventi. All'interno di una run la geometria e i processi fisici non dovrebbero mai essere modificati
+
+La run è rappresentata da *G4Run* (e gestito dal G4RunManager o G4MTRunManager in caso di multithreading) ed ha un numero identificativo settato dall'utente. G4Run ha 2 puntatori alle *G4VHitsCollection* e *G4VDigiCollection* che sono tavole associate ai sensitive detector e ai digitizer modules
+
+G4Run ha due metodi virtuali (RecordEvent (come accumulare dati su singolo thread) e Merge(come mettere insieme i dati dei singoli thread)) che **vanno definiti in caso di multithreading** per specificare come accumulare i dati
+
+### Geant come macchina a stati
+
+Geant è disegnato come una macchina a stati: certi metodi sono disponibuli solo in alcuni stati.
+
+<img src="images/Geant4/image-20220603181805850.png" alt="image-20220603181805850" style="zoom:50%;" />
+
+Volendo l'utente può fare cose al momento di un cambio stato creando una classe che deriva da *G4VStateDepend* implementando il virtual methon Notify(G4ApplicationState requiredState) dove required state è lo stato corrente.
+
+Anche il comportamente del RunManager può essere modificato sovrascrivendo i metodi di inizializzazione
+
+## Event
+
+Un oggetto event contiene tutti gli input e gli output simulati. E' costruita dal runmanager e mandata al *G4EventManager*
+
+Un G4Event ha 4 tipi di informazione:
+
+- **Particelle e vertici primari**
+- **Traiettorie**: memorizzate in un G4TrajectoryContainer. In G4Event è memorizzato il puntatore
+- **Hits collection**: COllezione degli hit generati nel sensitive detector e memorizzati in un oggetto G4HCofThisEvent (event ha il puntatore)
+-  **Digits collections** Digit generati dal modulo digitizer
+
+Il G4EventManager esegue le seguenti operazioni:
+
+<img src="images/Geant4/image-20220603182816919.png" alt="image-20220603182816919" style="zoom:50%;" />
+
+**BIASING EVENT:** E' possibile usare questa tecnica per diminuire notevolmente i tempi di calcolo nella simulazione di eventi rari. Consiste nel produrre molti più eventi rari rispetto al normale ma pesarli con dei pesi in modo da de-biasare la simulazione. (Applicazione estremamente specifica, vedi solo se serve)
+
+# Detectors
+
+## Solidi
+
+I solidi possono essere uniti, intersecati o sottratti tramite operazioni booleane
+
+```cpp
+G4UnionSolid* union=new G4UnionSolid("Box+Cylinder", box, cyl);
+G4IntersectionSolid* intersection=new G4IntersectionSolid("Box*Cylinder", box, cyl);
+G4SubtractionSolid* subtraction=new G4SubtractionSolid("Box-Cylinder", box, cyl);
+```
+
+potrebbe essere utile, prima di fare queste operazioni, traslare o ruotare uno di questi solidi.
+
+```cpp
+G4RotationMatrix* yRot = new G4RotationMatrix;
+ // Rotates X and Z axes only
+yRot->rotateY(M_PI/4.*rad);
+ // Rotates 45 degrees
+G4ThreeVector zTrans(0, 0, 50);
+G4UnionSolid* unionMoved =
+new G4UnionSolid("Box+CylinderMoved", box, cyl, yRot, zTrans);
+//La trasformazione viene applicata al secondo solido
+```
+
+Ci sono altri metodi per creare strutture multicomposite o tassellate ma sono casi specifici che non trattiamo qui
+
+## Logical volumes
+
+```cpp
+G4LogicalVolume( G4VSolid* pSolid,
+G4Material* pMaterial,
+const G4String& Name,
+G4FieldManager* pFieldMgr=0,
+G4VSensitiveDetector* pSDetector=0,
+G4UserLimits* pULimits=0,
+G4bool Optimise=true )
+```
+
+Il volume logico gestisce anchele informazioni relative alla visualizzazione, campi EM e traccia.
+E' possibile anche regolare la granularità dell'ottimizzazione della traccia usando il metodo SetSmartless (di default è 2) che controlla il numero medio di slice perper volume contenuto che è usato nell'ottimizzazione ù
+
+## Subdetector
+
+I volumi logici possono essere pensati come dei sub detector poichè rappresentano parti singole dell'intero detector. E' possibile assegrare dei *cut* a un volume logico in modo tale da runnare una simulazione più accurata solo dove richiesto. Per fare questo si usa il concetto di *detector Regior*
+
+Una volta che la geometria è stata definita è possivile definire una region con
+```cpp
+// rName = identificatore (stringa) della detector region
+G4Region( const G4String& rName )
+G4Region* emCalorimeter = new G4Region("EM-Calorimeter");
+emCalorimeterLV->SetRegion(emCalorimeter); //LV sta per logical volume.
+emCalorimeter->AddRootLogicalVolume(emCalorimeterLV);
+```
+
+Usando SetRegion su un logical volume lo trasformiamo in un root logical volume che è il primo volume in cima alla gerarchia a cui è assenata la regione (le proprietà della regione sono passate anche a tutti i figli del volume logico selezionato)
+
+Una volta definita la region è possibile definire una soglia di produzione (vedi più avanti cosa è un cut)
+```cpp
+emCalorimeter->SetProductionCuts(emCalCuts);// emCalCuts è un oggetto G4ProductionCut 
+```
+
+## Physical volume
+
+# ALTRO
+
+- /run/verbose 2 permette di vedere anche l'utilizzo delle risorse di sistema

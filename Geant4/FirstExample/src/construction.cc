@@ -12,7 +12,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct(){
     G4VPhysicalVolume *physWorld = new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),logicWorld,"World",0,false,0,true);
 
     //Lead Shield
-    G4Box *solidPanel = new G4Box("Panel",0.25*m,0.25*m,0.1*m);
+    G4Box *solidPanel = new G4Box("Panel",0.25*m,0.25*m,0.001*m);
     G4LogicalVolume *logicPanel = new G4LogicalVolume(solidPanel,MyMaterials.Pb,"Panel");
     G4VPhysicalVolume *physPanel = new G4PVPlacement(0,G4ThreeVector(),logicPanel,"Panel",logicWorld,false,0,true);
 
@@ -31,3 +31,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct(){
 
     return physWorld;
 }
+
+void MyDetectorConstruction::ConstructSDandField(){
+    MySensitiveDetector *sensDet = new MySensitiveDetector("SensPixel");
+    logicDetector->SetSensitiveDetector(sensDet);
+
+    }
