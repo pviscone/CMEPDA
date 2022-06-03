@@ -11,6 +11,11 @@
 
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction{
+    private:
+        //Il logical volum del detector va tenuto fuori dalla funzione construc
+        //Poichè poi viene usato per definire il sensitive volume
+        G4LogicalVolume *logicDetector;
+    
     public:
         MyDetectorConstruction();
         ~MyDetectorConstruction();
