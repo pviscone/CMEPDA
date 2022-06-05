@@ -1,5 +1,5 @@
 #pragma once
-#include "detector.hh"
+//#include "detector.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "MyMaterials.hh"
 #include "G4LogicalVolume.hh"
@@ -8,7 +8,10 @@
 #include "G4PVPlacement.hh"
 #include "G4ThreeVector.hh"
 #include "G4Box.hh"
-
+#include "G4PVReplica.hh"
+#include "G4UniformMagField.hh"
+#include "G4FieldManager.hh"
+#include "iomanip"
 
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction{

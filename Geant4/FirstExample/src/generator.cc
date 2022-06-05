@@ -8,7 +8,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
 
     fParticleGun->SetParticleDefinition(particle);
-    fParticleGun->SetParticleEnergy(1*GeV);
+    fParticleGun->SetParticleEnergy(10*MeV);
     fParticleGun->SetParticlePosition(G4ThreeVector(0,0,-0.3*m));
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
 }
@@ -20,5 +20,6 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *event)
 {
+    G4cout<< "======== NEW BEAM =======" << G4endl;
     fParticleGun->GeneratePrimaryVertex(event);
 }

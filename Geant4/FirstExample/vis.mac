@@ -10,3 +10,6 @@
 
 #Accumula tutti gli eventi in una run
 /vis/scene/endOfEventAction accumulate
+
+#Aggiungi assi
+/vis/scene/add/axes -0.6 -0.6 -0.6 0.2 m

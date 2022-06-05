@@ -390,7 +390,7 @@ Il programma può essere eseguito in diversi modi:
 
   Un esempio di macro può essere
 
-  ```cpp
+  ```
   #
   # Macro file for myProgram
   #
@@ -600,6 +600,200 @@ emCalorimeter->SetProductionCuts(emCalCuts);// emCalCuts è un oggetto G4Product
 
 ## Physical volume
 
+
+
+```cpp
+G4PVPlacement(G4Transform3D solidTransform, 
+//in alternativa alla trasformazione è possibile passare
+	//G4RotationMatrix*pRot,
+	//const G4ThreeVector& tlate,
+    G4LogicalVolume* pCurrentLogical,
+    const G4String& pName,
+    G4LogicalVolume* pMotherLogical,
+    G4bool pMany, //lascialo false
+    G4int pCopyNo,
+    G4bool pSurfChk=false)//rallenta esecuzione ma conviene attivarlo
+```
+
+Si noti che se si usa la matrice di rotazione bisogna passare un puntatore quindi la matrice non viene copiata E NON VA MODIFICATA DOPO AVER CREATO IL VOLUME FISICO
+
+### Repliche
+
+E' possibile suddividere un volume logico in più parti ed è possibile farlo con le G4PVReplica
+
+<img src="images/Geant4/image-20220604230641494.png" alt="image-20220604230641494" style="zoom:55%;" />
+
+
+
+L'asse su cui si può replicare sono:
+
+X,Y,X (kXAxis), asse radiale (kRho), asse polare cilindrico (kPhi)
+
+L'importante è che il volume logico madre abbia un solo figlio ovvero la replica (poichè le repliche lo riempiono completamente). Si può usare una replica come madre di un'altra replica
+
+Inoltre è necessario dimensionare opportunamente le dimensioni del solido con il numero di repliche e l'offset scelto
+
+Per esempio per suddividere un parallelepipedo in una matrice
+
+```cpp
+G4Box *solidDetector = new G4Box("Detector",0.25*m,0.25*m,0.001*m);
+G4LogicalVolume *logicDetector = new G4LogicalVolume(solidDetector,MyMaterials.Air,"Detector");
+G4VPhysicalVolume *physDetector = new G4PVPlacement(0,G4ThreeVector(0.,0.,0.3*m),logicDetector,"Detector",logicWorld,false,0,true);
+
+G4int nbOfPixelperAxis=20;
+G4double pixelDim = (0.25/nbOfPixelperAxis)*m;
+G4Box *solidPixel = new G4Box("Pixel",pixelDim,0.25*m,0.001*m);
+G4LogicalVolume *logicPixel= new G4LogicalVolume(solidPixel,MyMaterials.Si,"Pixel");
+G4VPhysicalVolume *physPixelX= new G4PVReplica ("PanelX",logicPixel,logicDetector,kXAxis,nbOfPixelperAxis,pixelDim*2,0);
+
+G4Box *solidPixelY = new G4Box("Pixel",pixelDim,pixelDim,0.001*m);
+G4LogicalVolume *logicPixelY= new G4LogicalVolume(solidPixelY,MyMaterials.Si,"Pixel");
+G4VPhysicalVolume *physPixelY= new G4PVReplica ("PanelY",logicPixelY,logicPixel,kYAxis,nbOfPixelperAxis,pixelDim*2,0);
+```
+
+Questo consente di evitare dei cicli for con dentro dei placement MA è scomodo perchè non è chiaro come vengono settati i copy number
+
+Se si vogliono fare cose più complicate come costruire ripetizioni di *volumi parametrizzati* (ovvero con proprietà diverse come ad esempio il materiali) è possibile usare G4VPVParametrisation e G4PVParametrised (vedi all'occorrenza) (risolvono anche il problema dei copy number)
+
+## Campi EM
+
+La propagazione delle particelle in un campo è simulato usando Runge-Kutta (ci sono diverse implementazioni e alternative)
+
+Ci sono diversi parametri che regolano l'accuratezza della soluzione: uno dei principali è la **miss distance** ovvero il limite superiore alla sagitta
+
+Per creare un campo magnetico bisogna creare un oggetto G4MagneticField (G4ElectricField per i campi elettrici e G4EqMagElectricField per quelli EM)
+
+Ci sono diverse funzioni per farlo, la più semplice è campo magnetico uniforme (ci sono molte configurazioni come ad esempio quella di quadrupolo)
+
+Il modo più conveniente per mettere un campo in un volume è quello di definire un G4FieldManager e passarlo al volume logico
+
+```cpp
+G4MagneticField *magField =new G4UniformMagField(G4ThreeVector(0.,0.,3.0*kilogauss));
+G4FieldManager* localFieldMgr = new G4FieldManager(magField);
+G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,MyMaterials.Air,"World",localFieldMgr);
+
+```
+
+Vedi il manuale se interessato a utilizzare altri solver per il calcolo delle traiettorie o per modificare l'accuratezza del  calcolo
+
+**NB la precessione dello spin in campo magnetico non viene simulata automaticamente. Va fatta a mano, vedi manuale**
+
+## HIT e sensitive detector
+
+SUL MANUALE DI QUESTA ROBA NON SI CAPISCE NULLA, scrivo quello che ho imparato nella pratica
+
+Per registrare i dati riguardanti alle tracce e alle interazioni delle particelle in un volume bisogna rendere il volume logico sensibile
+
+Per fare questo bisogna fare 2 cose:
+
+-  costruire una classe che deriva da **G4VSensitiveDetector**
+
+  ```cpp
+  class MySensitiveDetector : public G4VSensitiveDetector{
+      public:
+          MySensitiveDetector(G4String name);
+          ~MySensitiveDetector();
+      private:
+          virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
+  ```
+
+  Questa classe fornisce sia il costruttore del volumi sensibili sia il metodo **ProcessHits** che servirà a ottenere i dati che ci interessano dal nostro detector. La funzione processhits verrà eseguita ad ogni singolo step interno al detector sensibile
+
+  Altri 2 metodi sono **Initialize e EndOfEvents** che invece vengono runnati all'inizio e alla fine di un **evento**
+
+- Implementare il metodo privato **ConstructSDandField()** nella classe che costruisce il detector (quella che deriva da G4VUserDetectorConstruction).
+   **NB: i volumi logici che diventeranno sensibili definiscili come private nell'header altrimenti non puoi usare il puntatore per settarlo sensibile**
+
+  All'interno della funzione CostructSDandField() bisogna costruire e settare il volume sensibile con SetSensitiveDetector(logicVolume)
+
+  ```cpp
+  void MyDetectorConstruction::ConstructSDandField(){
+      MySensitiveDetector *sensDet = new MySensitiveDetector("Sensitive");
+      logicDetector->SetSensitiveDetector(sensDet);
+      }//sensDet è il volume logico da rendere sensibile
+  //logicDetector è definito nell'header di mydet.constr
+  ```
+
+> Le principali informazioni sono ottenibili dagli **Step, Touchable e Tracks**
+>
+> - **Step:** Corrisponde a un segmento di traiettoria. Uno step possiede 2 attributi G4StepPoint ovvro (un pre step point e un post step point) che contengono informazioni relative all'interazione prima e dopo lo step (usa sempre pre)
+>
+>   Inoltre dallo step è possibile otteneretutte le informazioni che ci servono sull'interazione
+>
+> - **Touchable**: Dal touchable invece possiamo avere tutte le informazioni sulla geometria e sul volume in cui è avvennuta l'unterazione
+>
+> - **Track**: Informazioni sulla particella
+>
+> - **Event**: insieme delle tracce (Le particelle vengono aggiunte come uno stack)
+
+Un esempio di informazioni utili che possiamo ottenere in ProcessHits possiamo osserverlo in questo esempio
+
+```cpp
+G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist){ //parametro TouchableHistory è obsoleto, lascialo stare
+    
+    //A ogni particella (quindi a ogni traccia) è associato un ID
+    G4Track *track = aStep->GetTrack();
+	G4int trackID = track->GetTrackID();
+    G4String particleName = track->GetDefinition()->GetParticleName();//nome part.
+    
+    
+    //id dell'evento
+    G4int evID=G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();//bisogna importare l'header del runmanager
+    
+    //Ottieni evento e Id dell'evento
+    G4Event *ev= aStep -> GetEvent();
+    G4int evID= ev->GetEventID();
+    
+    //E' possibile anche killare le tracce che non ci interessano
+	if (trackID != 1 && particleName != "gamma"){
+        track->SetTrackStatus(fStopAndKill);
+    }
+    
+    //ottieni posizione spaziale dell'interazione
+    G4StepPoint *preStepPoint = aStep -> GetPreStepPoint();
+    G4ThreeVector prePos = preStepPoint->GetPosition();
+
+	//Energia depositata
+    G4double edep= aStep->GetTotalEnergyDeposit();
+    
+	//ritorna il touchable coinvolto nel punto di interazione
+    const G4VTouchable* touchable = preStepPoint->GetTouchable();
+    G4int copyNo = touchable->GetCopyNumber();//torna il copy number del volume toccato
+    //Get Volume ritorna il volume fisico coinvolto, GetTranslation la posizione del suddetto volume fisico
+    G4ThreeVector pos = (touchable->GetVolume())->GetTranslation();
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 # ALTRO
 
 - /run/verbose 2 permette di vedere anche l'utilizzo delle risorse di sistema
+- /vis/scene/add/axes x y z lenght m permette di disegnare gli assi in un punto specifico e della dimensione voluta
+
+# TODO
+
+- Vedere come randomizzare energia, angolo e posizione della gui
+- Vedere come salvare dati relativi alle tracce reali e gli hit (chiedere a rizzi di come fare i raw data soprattutto per i PS)
+- Di solito si fa unit test su geant???
+- Come tratto gli elettroni delta????
+- devo stoppare le tracce? se si quando? (soprattutto relativi a elettroni delta)
+- Chiedi se va bene: 
+  Salvo traccia vera come posizione da dove è partito il fascio +  versore (3 vettori che hanno come componenti gli angoli sferici)
+  In più salvo le posizioni dei centri dei pixel accesi
+- Vedere questioni sul digitizer
+- Dare un occhiata ad altri metodi usabili sugli oggetti usati nel processhits
+- Vedere come usare il tempo nelle simulazioni (es. flusso di particelle o decadimenti di sorgenti)
+- vedere definizione dei detector (e di quanto altro possibile) con file ascii esterni
+- Vedi come generare particelle in posizioni e direzioni casuali
+- Multithreating
+- Video
+- cuts (?)
