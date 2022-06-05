@@ -797,3 +797,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
 - Multithreating
 - Video
 - cuts (?)
+- Le strip e i pixel hanno uno spacing? (zone morte)
+- Singola o multiple tracce contemporaneamente nel detector?
+- Come algoritmo di traccia va bene hough transform??? Anche in cuda
