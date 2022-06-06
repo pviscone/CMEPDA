@@ -1,5 +1,5 @@
 #include "detector.hh"
-#include "G4RunManager.hh"
+
 //name è il mome del detector
 MySensitiveDetector::MySensitiveDetector(G4String name) : G4VSensitiveDetector(name){
     G4cout << "MySensitiveDetector::MySensitiveDetector" << G4endl;
@@ -41,13 +41,21 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
 
     //Nel sensitive detector vengono killate tutte le tracce di particelle secondarie che non siano gamma
 
+
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+
+    analysisManager->FillNtupleIColumn( 0,  evID);
+    analysisManager->FillNtupleIColumn( 1, trackID);
+    analysisManager->FillNtupleSColumn( 2, particleName);
+    analysisManager->FillNtupleDColumn( 3, edep/MeV);
+    analysisManager->FillNtupleDColumn( 4, pos.x()/m);
+    analysisManager->FillNtupleDColumn( 5, pos.y()/m);
+    analysisManager->FillNtupleDColumn( 6, pos.z()/m);
+    analysisManager->AddNtupleRow(0);
+
     if (trackID != 1 && particleName != "gamma"){
         track->SetTrackStatus(fStopAndKill);
     }
-
-
-
-
 
     return true;
 }

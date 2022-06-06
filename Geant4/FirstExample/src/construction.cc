@@ -22,7 +22,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct(){
 
 
     G4double thickness= 0.2*m;
-    G4int nbOfPixelperAxis=4;
+    G4int nbOfPixelperAxis=100;
     G4double pixelDim = (0.25/nbOfPixelperAxis)*m;
 
 /*

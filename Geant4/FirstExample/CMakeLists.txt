@@ -24,6 +24,7 @@ target_link_libraries(sim ${Geant4_LIBRARIES})
 #
 set(SCRIPTS
     vis.mac
+    analysis.ipynb
     )
 
 foreach(_script ${SCRIPTS})
