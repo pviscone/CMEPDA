@@ -53,9 +53,11 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     analysisManager->FillNtupleDColumn( 6, pos.z()/m);
     analysisManager->AddNtupleRow(0);
 
+    track->SetTrackStatus(fStopAndKill);
+    /*
     if (trackID != 1 && particleName != "gamma"){
         track->SetTrackStatus(fStopAndKill);
     }
-
+    */
     return true;
 }

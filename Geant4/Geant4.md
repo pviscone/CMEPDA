@@ -766,11 +766,67 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
 
 
 
+## Salvare i risultati
+
+Possiamo salvare i dati della simulazione in un file root in quanto geant è provvista della classe **G4VAnalysisManager** che non è altro che un wrapper interno a Root (in questo modo non dobbiamo scomodarci a importare altri file nel makefile)
+
+Per salvare i dati dobbiamo creare una classe che eredita da **G4UserAction** e definire i metodi virtuali *BeginOfRunAction(const G4Run\*)* e *EndOfRunAction(const G4Run\*)* che verranno eseguiti rispettivamente all'inizio e alla fine di una run
+
+- In *BeginOfRunAction(const G4Run\*)* dobbiamo:
+  - Definire un analysis manager (singleton)
+  - Aprire il file
+  - Creare NTuple o quello che si vuole (comandi di root)
+- In EndOfRunAction(...) bisogna scrivere e chiudere il file
+
+```cpp
+void MyRunAction::BeginOfRunAction(const G4Run*){
+    //L'analysis manager, come tutto il resto, è un singleton.
+    //Definirne uno nuovo torna solo il puntatore al manager già creato.
+    // Per questo lo istanzio 20 volte, puntano tutti allo stesso manager
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+    analysisManager->SetVerboseLevel(2);
+    analysisManager->OpenFile("output.root");
 
 
+    analysisManager->CreateNtuple("ntuple", "ntuple");
+    analysisManager->CreateNtupleDColumn("EnergyDeposites");//Ntupla per energia depos.
+    analysisManager->FinishNtuple(0);
+
+}
 
 
+void MyRunAction::EndOfRunAction(const G4Run*){
+    //Torna il puntatore al manager definito prima (singleton)
+    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	//Scrivo e chiudo
+    analysisManager->Write();
+    analysisManager->CloseFile();
 
+}
+```
+
+- Questa classe va importata ed eseguita nella funzione Build della classe che deriva da G4VUserActionInitialization
+
+  ```cpp
+  void MyActionInitialization::Build() const
+  {
+  //ALTRA ROBA (setting del generatore)
+      MyRunAction* runAction = new MyRunAction(); //MyRunAction è la classse definita sopra
+      SetUserAction(runAction);
+  }
+  ```
+
+- In **ProcessHits** (dove avevamo ottenuto i dati che ci interessano per ogni step) dobbiamo fillare le NTuple (o altri oggetti) che abbiamo creato. Per farlo dobbiamo di nuovo ridefinire l'analysis manager che tornerà un puntatore a quello già definito prima
+
+  ```cpp
+  G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist){
+      //ALTRA ROBA ()
+      G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+      analysisManager->FillNtupleDColumn( 0, edep/MeV);    
+      return true;}
+  ```
+
+  
 
 
 
