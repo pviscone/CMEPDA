@@ -23,7 +23,6 @@ void MyRunAction::BeginOfRunAction(const G4Run*){
     analysisManager->CreateNtupleDColumn("YPixel");
     analysisManager->CreateNtupleDColumn("ZPixel");
     analysisManager->FinishNtuple(0);
-
 }
 
 

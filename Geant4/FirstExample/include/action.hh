@@ -8,6 +8,7 @@ class MyActionInitialization : public G4VUserActionInitialization{
         MyActionInitialization();
         ~MyActionInitialization();
 
-        //Runna la particle gun e si occupa dello stepping
+        //Runna la particle gun e si occupa dello stepping (build per ogni thread, build for master solo per il master thread)
         virtual void Build() const;
+        virtual void BuildForMaster() const;
 };

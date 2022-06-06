@@ -3,16 +3,24 @@
 #include "action.hh"
 #include "G4UImanager.hh"
 #include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include "G4VisExecutive.hh"
 #include "G4VisManager.hh"
 #include "G4UIExecutive.hh"
+#include <thread>
 
 
 
 
 int main(int argc, char **argv){
 
+
+s
+    G4cout << "Using " << runManager->GetNumberOfThreads() << " threads" << G4endl;
+    #else
     G4RunManager *runManager=new G4RunManager();
+    G4cout << "NO threads" << G4endl;
+    #endif
 
     runManager->SetUserInitialization(new MyDetectorConstruction());
     runManager->SetUserInitialization(new MyPhysicsList());

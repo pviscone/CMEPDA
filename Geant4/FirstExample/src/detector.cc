@@ -2,7 +2,7 @@
 
 //name è il mome del detector
 MySensitiveDetector::MySensitiveDetector(G4String name) : G4VSensitiveDetector(name){
-    G4cout << "MySensitiveDetector::MySensitiveDetector" << G4endl;
+    //G4cout << "MySensitiveDetector::MySensitiveDetector" << G4endl;
 }
 
 
@@ -28,9 +28,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     G4int copyNo = touchable->GetCopyNumber();
     G4ThreeVector pos = (touchable->GetVolume())->GetTranslation();
 
-    G4cout << "EVENTO: " << evID << G4endl;
-    G4cout << std::setw(20) << "ID" << std::setw(20) << "copy#" << std::setw(20) << "Particle" << std::setw(20) << "position" << std::setw(50) << "Pixel center" << std::setw(40) << "Energy deposit" << G4endl;
-    G4cout << std::setw(20) << trackID << std::setw(20) << copyNo << std::setw(20) << particleName << std::setw(5) << prePos/m << " m" << std::setw(20) << pos/m<< " m" << std::setw(40) << edep << " MeV" << G4endl;
+    //G4cout << "EVENTO: " << evID << G4endl;
+    //G4cout << std::setw(20) << "ID" << std::setw(20) << "copy#" << std::setw(20) << "Particle" << std::setw(20) << "position" << std::setw(50) << "Pixel center" << std::setw(40) << "Energy deposit" << G4endl;
+    //G4cout << std::setw(20) << trackID << std::setw(20) << copyNo << std::setw(20) << particleName << std::setw(5) << prePos/m << " m" << std::setw(20) << pos/m<< " m" << std::setw(40) << edep << " MeV" << G4endl;
 
     //G4cout << std::setw(6) << "ID: " << trackID << " | copy#: " << copyNo <<" | Particle: " << particleName << " |  position: " << prePos/m << " m | Energy deposit: "<< edep/MeV << " MeV" <<  G4endl;
 
@@ -54,10 +54,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     analysisManager->AddNtupleRow(0);
 
     track->SetTrackStatus(fStopAndKill);
-    /*
     if (trackID != 1 && particleName != "gamma"){
         track->SetTrackStatus(fStopAndKill);
     }
-    */
+
     return true;
 }

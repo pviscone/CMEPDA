@@ -826,9 +826,57 @@ void MyRunAction::EndOfRunAction(const G4Run*){
       return true;}
   ```
 
+
+# Multithreading
+
+Per usare geant in multithread basta fare poche modifiche
+
+- Usare la versione multithreading del run manager
+
+  ```cpp
+  //in questo modo si possono usare le direttive al preprocessore per istanziare il manager corretto    
+  #include <thread> //usato per tornare num thread del sistema     
+  #ifdef G4MULTITHREADED
+      unsigned int nthreads = std::thread::hardware_concurrency();
+      G4MTRunManager *runManager=new G4MTRunManager();
+      runManager->SetNumberOfThreads(nthreads);//numero thread da usare
+      #else
+      G4RunManager *runManager=new G4RunManager();
+      #endif
+  ```
+
+- Nella classe che deriva da G4VUserActionInitialization occorre aggiungere la funcione const virtuale BuildForMaster e copiarci dentro le azioni definite dall'utente (non il generatore). Build verrà eseguito da tutti i thread, BuildFormMaster solo dal master thread
+
+  ```cpp
+  void MyActionInitialization::Build() const
+  {
+      MyPrimaryGenerator* primaryGenerator = new MyPrimaryGenerator();
+      SetUserAction(primaryGenerator);
   
+      MyRunAction* runAction = new MyRunAction();
+      SetUserAction(runAction);
+  }
+  
+  void MyActionInitialization::BuildForMaster() const
+  {
+      MyRunAction* runAction = new MyRunAction();
+      SetUserAction(runAction);
+  }
+  ```
 
+  **NB: Per evitare problemi di data racing geant salverà su un file diverso i risultati di ogni thread diverso** (/run/beamOn 10 significa che questi 10 verranno divisi su diversi thread)
 
+  Alla fine se si vuole mettere insieme i file si può usare, esternamente a geant, hadd per unire i file root
+
+  ```bash
+  hadd union.root ./*.root
+  ```
+
+  **NB elimina sempre prima i vecchi file root altrimenti non so perchè ma impazzisce e salva cose a caso**
+
+E' possibile fare altre ulteriori ottimizzazioni:
+
+- Quando si usano molti thread uno dei principali bottleneck è causato dall'output del terminale, conviene fortemente disattivarlo. 
 
 # ALTRO
 

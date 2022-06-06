@@ -5,7 +5,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     //numero di particelle per evento
     fParticleGun = new G4ParticleGun(1);
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-    G4ParticleDefinition* particle = particleTable->FindParticle("gamma");
+    G4ParticleDefinition* particle = particleTable->FindParticle("e-");
 
     fParticleGun->SetParticleDefinition(particle);
     fParticleGun->SetParticleEnergy(10*MeV);
@@ -20,6 +20,6 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *event)
 {
-    G4cout<< "======== NEW BEAM =======" << G4endl;
+    //G4cout<< "======== NEW BEAM =======" << G4endl;
     fParticleGun->GeneratePrimaryVertex(event);
 }
