@@ -15,7 +15,10 @@
 int main(int argc, char **argv){
 
 
-s
+    #ifdef G4MULTITHREADED
+    G4int nThreads = std::thread::hardware_concurrency();
+    G4MTRunManager* runManager = new G4MTRunManager;
+    runManager->SetNumberOfThreads(nThreads);
     G4cout << "Using " << runManager->GetNumberOfThreads() << " threads" << G4endl;
     #else
     G4RunManager *runManager=new G4RunManager();
