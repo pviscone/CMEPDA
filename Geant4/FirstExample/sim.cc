@@ -42,7 +42,8 @@ int main(int argc, char **argv){
     G4String command = "/control/execute ";
     if(argc==1){
         std::cout << "No input file specified. Using default macro." << std::endl;
-        UImanager->ApplyCommand(command+"vis.mac");
+        UImanager->ApplyCommand(command+"./vis.mac");
+        UImanager->ApplyCommand(command+"./run.mac");
         //ui->SessionStart();
         //delete ui;
     }
@@ -56,9 +57,11 @@ int main(int argc, char **argv){
         }
     }
     //UImanager->ApplyCommand("/control/execute vis.mac"); //Definire la macro per la visualizzazione
-    ui->SessionStart();
+    //ui->SessionStart();
 
-
+    delete ui;
+    delete visManager;
+    delete runManager;
 
     return 0;
 }
