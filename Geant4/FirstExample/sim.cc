@@ -57,7 +57,7 @@ int main(int argc, char **argv){
         }
     }
     //UImanager->ApplyCommand("/control/execute vis.mac"); //Definire la macro per la visualizzazione
-    //ui->SessionStart();
+    ui->SessionStart();
 
     delete ui;
     delete visManager;

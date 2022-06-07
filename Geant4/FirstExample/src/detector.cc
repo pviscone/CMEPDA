@@ -46,7 +46,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
 
     G4double particleID;
     if(particle=="gamma"){
-        particleID=1;
+        particleID=4;
     }
     else if(particle=="e-"){
         particleID=2;
@@ -55,6 +55,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
         particleID=3;
     }
     else if(particle=="mu+"){
+        particleID=1;
+    }
+    else if(particle=="mu-"){
         particleID=0;
     }
     else{
