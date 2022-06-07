@@ -21,7 +21,7 @@ void MyRunAction::BeginOfRunAction(const G4Run*){
     analysisManager->CreateNtupleDColumn("EnergyDeposites");
     analysisManager->CreateNtupleDColumn("XPixel");
     analysisManager->CreateNtupleDColumn("YPixel");
-    analysisManager->CreateNtupleDColumn("ZPixel");
+    analysisManager->CreateNtupleDColumn("Layer");
     analysisManager->FinishNtuple(0);
 }
 

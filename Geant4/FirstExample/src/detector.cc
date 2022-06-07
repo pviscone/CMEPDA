@@ -23,6 +23,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     G4ThreeVector prePos = preStepPoint->GetPosition();
     G4double edep= aStep->GetTotalEnergyDeposit();
     G4String particleName = track->GetDefinition()->GetParticleName();
+    std::string particle=particleName;
     G4int trackID = track->GetTrackID();
     const G4VTouchable* touchable = preStepPoint->GetTouchable();
     G4int copyNo = touchable->GetCopyNumber();
@@ -40,23 +41,23 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     //G4cout << "Pixel center: " << pos/m << " m" << G4endl;
 
     //Nel sensitive detector vengono killate tutte le tracce di particelle secondarie che non siano gamma
-
+    G4double layer = touchable->GetCopyNumber();
 
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
     analysisManager->FillNtupleIColumn( 0,  evID);
     analysisManager->FillNtupleIColumn( 1, trackID);
-    analysisManager->FillNtupleSColumn( 2, particleName);
+    analysisManager->FillNtupleSColumn( 2, particle);
     analysisManager->FillNtupleDColumn( 3, edep/MeV);
     analysisManager->FillNtupleDColumn( 4, pos.x()/m);
     analysisManager->FillNtupleDColumn( 5, pos.y()/m);
-    analysisManager->FillNtupleDColumn( 6, pos.z()/m);
+    analysisManager->FillNtupleDColumn( 6, layer);
     analysisManager->AddNtupleRow(0);
 
-    track->SetTrackStatus(fStopAndKill);
+/*     track->SetTrackStatus(fStopAndKill);
     if (trackID != 1 && particleName != "gamma"){
         track->SetTrackStatus(fStopAndKill);
-    }
+    } */
 
     return true;
 }

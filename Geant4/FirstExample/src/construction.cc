@@ -16,13 +16,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct(){
 
 
     //Lead Shield
-    G4Box *solidPanel = new G4Box("Panel",0.25*m,0.25*m,0.005*m);
+/*     G4Box *solidPanel = new G4Box("Panel",0.25*m,0.25*m,0.005*m);
     G4LogicalVolume *logicPanel = new G4LogicalVolume(solidPanel,MyMaterials.C,"Panel");
     G4VPhysicalVolume *physPanel = new G4PVPlacement(0,G4ThreeVector(),logicPanel,"Panel",logicWorld,false,0,true);
+ */
 
-
-    G4double thickness= 0.2*m;
+    G4double thickness= 0.004*m;
     G4int nbOfPixelperAxis=100;
+    G4int numLayer = 8;
     G4double pixelDim = (0.25/nbOfPixelperAxis)*m;
 
 /*
@@ -43,14 +44,16 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct(){
 
     //Silicon pixel detector
     G4Box *solidPixel = new G4Box("Pixel",pixelDim,pixelDim,thickness);
-    logicDetector= new G4LogicalVolume(solidPixel,MyMaterials.NaI,"Pixel");
+    logicDetector= new G4LogicalVolume(solidPixel,MyMaterials.Si,"Pixel");
 
     //Creare array di sensitive detector con for loop
     for (int i=0; i<nbOfPixelperAxis; i++){
         for(int j=0; j<nbOfPixelperAxis; j++){
-            G4String name = "Pixel"+std::to_string(i)+std::to_string(j);
-            //nota che ora abbiamo dei numeri che indicizzano i pixel come j+i*100
-            G4VPhysicalVolume *physPixel = new G4PVPlacement(0,G4ThreeVector((-0.25*m+pixelDim)+2*i*pixelDim,(-0.25*m+pixelDim)+2*j*pixelDim,0.3*m),logicDetector,name,logicWorld,false,j+i*100,true);
+            for(int z=0; z<numLayer; z++){
+                G4String name = "Pixel"+std::to_string(i)+std::to_string(j);
+                //nota che ora abbiamo dei numeri che indicizzano i pixel come j+i*100 (anzi uso il layer)
+                G4VPhysicalVolume *physPixel = new G4PVPlacement(0,G4ThreeVector((-0.25*m+pixelDim)+2*i*pixelDim,(-0.25*m+pixelDim)+2*j*pixelDim,(z*0.5/numLayer)*m),logicDetector,name,logicWorld,false,z+1,false);
+            }
         }
     }
 
