@@ -826,6 +826,11 @@ void MyRunAction::EndOfRunAction(const G4Run*){
       return true;}
   ```
 
+> **Efficienza:** Nel caso volessimo tenere conto dell'efficienza di un detector possiamo usare un piccolo trucco. (Esempio: efficienza PMT in funzione lunghezza d'onda)
+>
+> Possiamo salvare i dati riguardanti l'efficienza in una qualsiasi struttura dati (conviene usare un **G4PhysicsOrderedFreeVector** (di default fa lo spline tra i dati, disattivalo (SetSpline(false))se il sampling della curva è sufficientemente fitto). I metodi da usarre sono InsertValues(a,b) e Values(a) per ottenere il rispettivo b)
+>
+> Per tenere conto dell'efficienza basta mettere il blocco di codice che salva i dati in un if (G4UniformRand() < eff->Value(wlen) )
 
 # Multithreading
 
