@@ -43,11 +43,29 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* R0his
     //Nel sensitive detector vengono killate tutte le tracce di particelle secondarie che non siano gamma
     G4double layer = touchable->GetCopyNumber();
 
+
+    G4double particleID;
+    if(particle=="gamma"){
+        particleID=1;
+    }
+    else if(particle=="e-"){
+        particleID=2;
+    }
+    else if(particle=="e+"){
+        particleID=3;
+    }
+    else if(particle=="mu+"){
+        particleID=0;
+    }
+    else{
+        particleID=-1;
+    }
+
     G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
     analysisManager->FillNtupleIColumn( 0,  evID);
     analysisManager->FillNtupleIColumn( 1, trackID);
-    analysisManager->FillNtupleSColumn( 2, particle);
+    analysisManager->FillNtupleDColumn( 2, particleID);
     analysisManager->FillNtupleDColumn( 3, edep/MeV);
     analysisManager->FillNtupleDColumn( 4, pos.x()/m);
     analysisManager->FillNtupleDColumn( 5, pos.y()/m);

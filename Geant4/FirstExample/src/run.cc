@@ -17,7 +17,7 @@ void MyRunAction::BeginOfRunAction(const G4Run*){
     analysisManager->CreateNtuple("ntuple", "ntuple");
     analysisManager->CreateNtupleIColumn("EventID");
     analysisManager->CreateNtupleIColumn("TrackID");
-    analysisManager->CreateNtupleSColumn("ParticleName");
+    analysisManager->CreateNtupleDColumn("ParticleID");
     analysisManager->CreateNtupleDColumn("EnergyDeposites");
     analysisManager->CreateNtupleDColumn("XPixel");
     analysisManager->CreateNtupleDColumn("YPixel");
