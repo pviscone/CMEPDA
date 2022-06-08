@@ -1,19 +1,46 @@
+## Set the minumum version
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+
+set(PROJECT "Simulation")
+set(EXECUTABLE_NAME "sim")
+set(MAIN_FILE "sim.cc")
+
+## Project name
+project(${PROJECT})
+
+
+##Uncomment to enable Verbose Make
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+
+## Set Cpp Standard
 set (CMAKE_CXX_STANDARD 17)
 
-project(Simulation)
+##Set g++ as compiler if exists
+find_program(GPP g++)
+if(GPP)
+    set(CMAKE_CXX_COMPILER g++)
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
+endif()
+
+## Check for ccache to speed up builds
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 
 find_package(Geant4 REQUIRED ui_all vis_all)
-
-
 include(${Geant4_USE_FILE})
+
+
+## Set the include directories and the file to compile
 include_directories(${PROJECT_SOURCE_DIR}/include)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/*.cpp ${PROJECT_SOURCE_DIR}/src/*.c)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/*.h)
 
 
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
-
-add_executable(sim sim.cc ${sources} ${headers})
+## Create the executable
+add_executable(${EXECUTABLE_NAME} ${MAIN_FILE} ${sources} ${headers})
 target_link_libraries(sim ${Geant4_LIBRARIES})
 
 
@@ -42,4 +69,4 @@ endforeach()
 
 
 
-add_custom_target(Simulation DEPENDS sim)
+#add_custom_target(Simulation DEPENDS sim)
